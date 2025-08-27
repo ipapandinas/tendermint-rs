@@ -1,15 +1,15 @@
 //! Blocking ABCI client.
 
 use std::net::{TcpStream, ToSocketAddrs};
-
-use tendermint_proto::v0_38::abci::{
+use tendermint_proto::abci::{
     request, response, Request, RequestApplySnapshotChunk, RequestCheckTx, RequestCommit,
     RequestEcho, RequestExtendVote, RequestFinalizeBlock, RequestFlush, RequestInfo,
     RequestInitChain, RequestListSnapshots, RequestLoadSnapshotChunk, RequestOfferSnapshot,
     RequestQuery, RequestVerifyVoteExtension, ResponseApplySnapshotChunk, ResponseCheckTx,
     ResponseCommit, ResponseEcho, ResponseExtendVote, ResponseFinalizeBlock, ResponseFlush,
     ResponseInfo, ResponseInitChain, ResponseListSnapshots, ResponseLoadSnapshotChunk,
-    ResponseOfferSnapshot, ResponseQuery, ResponseVerifyVoteExtension,
+    ResponseOfferSnapshot, ResponseQuery, ResponseVerifyVoteExtension, RequestPrepareProposal,
+    RequestProcessProposal, ResponsePrepareProposal, ResponseProcessProposal
 };
 
 use crate::{codec::ClientCodec, Error};
@@ -143,6 +143,20 @@ impl Client {
         req: RequestFinalizeBlock,
     ) -> Result<ResponseFinalizeBlock, Error> {
         perform!(self, FinalizeBlock, req)
+    }
+
+    pub fn prepare_proposal(
+        &mut self,
+        req: RequestPrepareProposal,
+    ) -> Result<ResponsePrepareProposal, Error> {
+        perform!(self, PrepareProposal, req)
+    }
+
+    pub fn process_proposal(
+        &mut self,
+        req: RequestProcessProposal,
+    ) -> Result<ResponseProcessProposal, Error> {
+        perform!(self, ProcessProposal, req)
     }
 
     fn perform(&mut self, req: request::Value) -> Result<response::Value, Error> {
